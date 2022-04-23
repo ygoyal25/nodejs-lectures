@@ -2,7 +2,7 @@ console.log("Hello World!!");
 
 const firstName = "Yash";
 
-console.log("Name is ", firstName);
+// console.log("Name is ", firstName);
 
 // Window, document, alert 
 
