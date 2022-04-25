@@ -6,23 +6,18 @@
     <title>First Express App</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet' type='text/css' media='screen' href='stylesheets/index.css'>
-    <!-- <script src='main.js'></script> -->
+    <script src='scripts/main.js'></script>
 </head>
 <body>
     <div>
         <h1>Todo App</h1>
         <div>
             <p>Add you todo</p>
-            <form method="POST">
-                <input name="todo" />
-                <button type="submit">Submit</button>
-            </form>
-            <% todos.forEach((todo, i) => { %>
-                <form method="POST" action="/delete/<%= i %>?_method=DELETE">
-                    <p><%= todo %></p>
-                    <button>Del</button>
-                </form>
-            <% }) %>
+            <input name="todo" />
+            <button onclick="addTodo()">Submit</button>
+            <div id="todos">
+
+            </div>
         </div>
     </div>
 </body>

@@ -15,6 +15,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.use(methodOverride('_method'));
 
@@ -22,21 +23,22 @@ app.use(methodOverride('_method'));
 // GET, POST, PUT, PATCH, DELETE
 
 app.get('/', function (req, res) {
-    res.render('homepage.ejs', { todos });
+    res.render('homepage.ejs');
 });
 
-app.post('/', function(req, res) {
-    // console.log(req.body);
-    todos.push(req.body.todo);
-    res.redirect('/');
-    // res.render('homepage.ejs', { todos });
+app.get('/todos', function(req, res) {
+    res.send({ todos });
 })
 
-app.delete('/delete/:index', function(req, res) {
-    console.log(req.params.index);
+app.post('/todos', function(req, res) {
+    console.log(req.body);
+    todos.push(req.body.todo);
+    res.send({ todos });
+})
+
+app.delete('/todos/:index', function(req, res) {
     todos.splice(req.params.index, 1);
-    // Alter the array, remove the index element from array
-    res.redirect('/');
+    res.send({ status: 'success' });
 })
 
 app.listen(3000)
