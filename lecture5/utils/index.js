@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const SECRET = 'MyJWT123';
+const SECRET = process.env.SECRET;
 
 async function genHash(password) {
     return new Promise((res, rej) => {
@@ -29,4 +29,16 @@ function genToken(user) {
     return token;
 }
 
-module.exports = { genHash, comparePassword, genToken };
+function verifyToken(token) {
+    return new Promise((res, rej) => {
+        jwt.verify(token, SECRET, function(err, decoded) {
+            if (err) {
+                rej(err);
+            } else {
+                res(decoded);
+            }
+        });
+    })
+}
+
+module.exports = { genHash, comparePassword, genToken, verifyToken };

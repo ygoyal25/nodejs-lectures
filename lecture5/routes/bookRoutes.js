@@ -2,6 +2,7 @@ const express = require('express');
 const { default: mongoose } = require('mongoose');
 const router = express.Router();
 const book = require('../model/book');
+const user = require('../model/user');
 const { body, validationResult } = require('express-validator');
 
 router.get('/', async function(req, res) {
@@ -23,6 +24,12 @@ router.post('/', [
         body('year', 'Year Should Be Number').isNumeric(),
     ], async function(req, res) {
     try {
+        if (req.userType !== 'ADMIN') {
+            const error = new Error('Only Admin can add books');
+            error.statusCode = 403;
+            throw error;
+        }
+
         const errors = validationResult(req);
         console.log('Error', errors.array());
 
@@ -63,6 +70,30 @@ router.delete('/:bookId', async function(req, res) {
     } catch (e) {
         console.log(e);
         res.status(500).send({ error: 'Internal Server Error' });
+    }
+});
+
+router.post('/:bookId/borrow', async function(req, res) {
+    try {
+        const bookToBorrow = await book.findOne({ _id: mongoose.Types.ObjectId(req.params.bookId), copies: { $gt: 0 } });
+        if (!bookToBorrow) {
+            const error = new Error('Book Not Available!');
+            error.statusCode = 404;
+            throw error;
+        }
+        await user.updateOne({ email: req.userEmail }, {
+            $push: { books: { _id: bookToBorrow._id } }
+        });
+        await book.updateOne({ _id: mongoose.Types.ObjectId(req.params.bookId)}, 
+            {
+                $inc: {
+                    copies: -1
+            }
+        });
+        res.send({});
+    } catch(e) {
+        console.log(e);
+        res.status(e.statusCode || 500).send({ error: e.message });
     }
 })
 
